@@ -1,6 +1,6 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet.tsx';
-import { CircleUser, Menu, Package2, Search } from 'lucide-react';
+import { CircleUser, Mail, Menu, Package2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import {
@@ -9,8 +9,12 @@ import {
     DropdownMenuLabel, DropdownMenuSeparator,
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu.tsx';
+import { useUser } from '@/providers/UserProvider.tsx';
 
 export default function NavbarLayout() {
+    const user = useUser();
+    const location = useLocation();
+
     return (
         <>
             <header
@@ -22,25 +26,25 @@ export default function NavbarLayout() {
                         className="flex items-center gap-2 text-lg font-semibold md:text-base"
                     >
                         <Package2 className="h-6 w-6" />
-                        <span className="sr-only">Vex Marketplace</span>
+                        <span className="sr-only">VEX Market</span>
                     </Link>
                     <Link
-                        to="/browse"
-                        className="text-muted-foreground transition-colors hover:text-foreground"
+                        to="/"
+                        className={location.pathname === '/' ? `text-foreground` : `text-muted-foreground transition-colors hover:text-foreground`}
                     >
                         Browse
                     </Link>
                     <Link
-                        to="/profile/listings"
-                        className="w-max text-muted-foreground transition-colors hover:text-foreground"
+                        to="/listings"
+                        className={location.pathname === '/listings' ? `w-max text-foreground` : `w-max text-muted-foreground transition-colors hover:text-foreground`}
                     >
                         My Listings
                     </Link>
                     <Link
                         to="/post"
-                        className="text-muted-foreground transition-colors hover:text-foreground"
+                        className={location.pathname === '/post' ? `w-max text-foreground` : `w-max text-muted-foreground transition-colors hover:text-foreground`}
                     >
-                        List
+                        Create Listing
                     </Link>
                 </nav>
                 <Sheet>
@@ -65,21 +69,21 @@ export default function NavbarLayout() {
                             </Link>
                             <Link
                                 to="/"
-                                className="hover:text-foreground"
+                                className={`${location.pathname !== '/' ? 'text-muted-foreground' : ''} hover:text-foreground`}
                             >
                                 Browse
                             </Link>
                             <Link
-                                to="/profile/listings"
-                                className="text-muted-foreground hover:text-foreground"
+                                to="/listings"
+                                className={`${location.pathname !== '/listings' ? 'text-muted-foreground' : ''} hover:text-foreground`}
                             >
                                 My Listings
                             </Link>
                             <Link
                                 to="/post"
-                                className="text-muted-foreground hover:text-foreground"
+                                className={`${location.pathname !== '/post' ? 'text-muted-foreground' : ''} hover:text-foreground`}
                             >
-                                List
+                                Create Listing
                             </Link>
                         </nav>
                     </SheetContent>
@@ -95,20 +99,34 @@ export default function NavbarLayout() {
                             />
                         </div>
                     </form>
+                    {user.loggedIn && (
+                        <Link to="/messages" className="-mr-2 md:mr-0 lg:-mr-2">
+                            <Button variant="ghost" size="icon" className="rounded-full">
+                                <Mail className="h-5 w-5" />
+                                <span className="sr-only">Toggle user menu</span>
+                            </Button>
+                        </Link>
+                    )}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="secondary" size="icon" className="rounded-full">
-                                <CircleUser className="h-5 w-5"/>
+                            <Button variant="ghost" size="icon" className="rounded-full">
+                                <CircleUser className="h-5 w-5" />
                                 <span className="sr-only">Toggle user menu</span>
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Hi, Name!</DropdownMenuLabel>
-                            <DropdownMenuSeparator/>
-                            <DropdownMenuItem>Messages</DropdownMenuItem>
-                            <DropdownMenuItem>Settings</DropdownMenuItem>
-                            <DropdownMenuSeparator/>
-                            <DropdownMenuItem>Logout</DropdownMenuItem>
+                            {user.loggedIn ?
+                                <>
+                                    <DropdownMenuLabel>Hi, {user.firstName}!</DropdownMenuLabel>
+                                    <DropdownMenuSeparator/>
+                                    <Link to="/settings"><DropdownMenuItem>Settings</DropdownMenuItem></Link>
+                                    <DropdownMenuSeparator/>
+                                    <Link to="/logout"><DropdownMenuItem>Log out</DropdownMenuItem></Link>
+                                </> :
+                                <>
+                                    <Link to="/auth/login"><DropdownMenuItem>Log in</DropdownMenuItem></Link>
+                                    <Link to="/auth/register"><DropdownMenuItem>Register</DropdownMenuItem></Link>
+                                </>}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </div>

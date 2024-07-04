@@ -1,49 +1,30 @@
 import { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card.tsx';
 import { Label } from '@/components/ui/label.tsx';
 import { Input } from '@/components/ui/input.tsx';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 import { Button, buttonVariants } from '@/components/ui/button.tsx';
+import { Link } from 'react-router-dom';
 import React, { useState } from 'react';
 import { emailRegex } from '@/vars.ts';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 import sendReq from '@/utils/sendReq.ts';
-import toast from 'react-hot-toast';
+import { IoArrowForward } from 'react-icons/io5';
 
-export default function Login() {
+export default function ForgotPassword() {
     const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
     const [formError, setFormError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [submitError, setSubmitError] = useState('');
-    const navigate = useNavigate();
-    const [searchParams] = useSearchParams();
+    const [success, setSuccess] = useState(false);
 
     const isSubmitDisabled = formError === null || formError.length > 0 || loading;
 
     const onFormInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSubmitError('');
 
-        const currentValues = {
-            email, password
-        };
-        switch (e.target.id) {
-            case 'email':
-                setEmail(e.target.value);
-                currentValues.email = e.target.value;
-                break;
-            case 'password':
-                setPassword(e.target.value);
-                currentValues.password = e.target.value;
-                break;
-        }
+        setEmail(e.target.value);
 
-        const formErrors = [];
-
-        if (currentValues.email.length === 0) formErrors.push('Email is required');
-        if (!emailRegex.test(currentValues.email)) formErrors.push('Invalid email address');
-        if (currentValues.password.length === 0) formErrors.push('Password is required');
-
-        setFormError(formErrors.join('\n'));
+        if (e.target.value.length === 0) setFormError('Email is required');
+        if (!emailRegex.test(e.target.value)) setFormError('Email is invalid');
     };
 
     const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -54,14 +35,13 @@ export default function Login() {
         setLoading(true);
         setSubmitError('');
 
-        sendReq('/auth/login', 'POST', {
-            email,
-            password
+        sendReq('/auth/reset', 'POST', {
+            email
         }).then(res => {
             setLoading(false);
 
             if (!res.fetched) {
-                setSubmitError('Something went wrong while logging in. Please try again later.');
+                setSubmitError('Something went wrong while requesting a password reset. Please try again later.');
                 return;
             }
 
@@ -70,17 +50,32 @@ export default function Login() {
                 return;
             }
 
-            navigate(searchParams.get('to') || '/');
-            toast.success('Logged in!');
+            setSuccess(true);
         });
     };
+
+    if (success) {
+        return (
+            <>
+                <CardHeader>
+                    <CardTitle className="text-xl">Reset Password</CardTitle>
+                </CardHeader>
+                <CardContent>
+                    <p className="mb-4">If there is an account associated with your email, a password reset link will be sent to you. Please check your inbox.</p>
+                    <div className="flex flex-row justify-center">
+                        <Link to="/auth/login"><Button>Log in <IoArrowForward className="inline ml-1" size={18} /></Button></Link>
+                    </div>
+                </CardContent>
+            </>
+        );
+    }
 
     return (
         <>
             <CardHeader>
-                <CardTitle className="text-2xl">Login</CardTitle>
+                <CardTitle>Reset Password</CardTitle>
                 <CardDescription>
-                    Enter your email below to login to your account
+                    Enter your email below to reset your password
                 </CardDescription>
             </CardHeader>
             <CardContent>
@@ -93,23 +88,6 @@ export default function Login() {
                             placeholder="john@example.com"
                             required
                             value={email}
-                            onChange={onFormInput}
-                            onKeyDown={onKeyDown}
-                            disabled={loading}
-                        />
-                    </div>
-                    <div className="grid gap-2">
-                        <div className="flex items-center">
-                            <Label htmlFor="password">Password</Label>
-                            <Link to="/auth/forgot" className="ml-auto inline-block text-sm underline">
-                                Forgot your password?
-                            </Link>
-                        </div>
-                        <Input
-                            id="password"
-                            type="password"
-                            required
-                            value={password}
                             onChange={onFormInput}
                             onKeyDown={onKeyDown}
                             disabled={loading}
@@ -132,20 +110,17 @@ export default function Login() {
                         </TooltipProvider>
                         : <Button type="submit" className="w-full" onClick={onSubmit}
                                   disabled={formError === null || loading}>
-                            {loading ? 'Logging in...' : 'Log in'}
+                            {loading ? 'Loading...' : 'Reset password'}
                         </Button>}
-                    {/*<Button variant="outline" className="w-full">
-                            Login with Discord
-                        </Button>*/}
                     <p className="text-red-600 -mt-2">{submitError}</p>
                 </div>
                 <div className="mt-4 text-center text-sm">
-                Don&apos;t have an account?{" "}
+                    Don&apos;t have an account?{" "}
                     <Link to="/auth/register" className="underline">
                         Sign up
                     </Link>
                 </div>
             </CardContent>
         </>
-    );
+);
 }
