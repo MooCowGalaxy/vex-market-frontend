@@ -8,8 +8,10 @@ import { emailRegex } from '@/vars.ts';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 import sendReq from '@/utils/sendReq.ts';
 import toast from 'react-hot-toast';
+import { useUser } from '@/providers/UserProvider.tsx';
 
 export default function Login() {
+    const user = useUser();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [formError, setFormError] = useState<string | null>(null);
@@ -70,8 +72,10 @@ export default function Login() {
                 return;
             }
 
-            navigate(searchParams.get('to') || '/');
-            toast.success('Logged in!');
+            user.updateUser().then(() => {
+                navigate(searchParams.get('to') || '/');
+                toast.success('Logged in!');
+            });
         });
     };
 

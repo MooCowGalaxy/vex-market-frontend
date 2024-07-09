@@ -10,15 +10,16 @@ import {
     DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu.tsx';
 import { useUser } from '@/providers/UserProvider.tsx';
+import Footer from '@/components/Footer.tsx';
 
 export default function NavbarLayout() {
     const user = useUser();
     const location = useLocation();
 
     return (
-        <>
+        <div className="min-w-screen min-h-screen flex flex-col">
             <header
-                className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
+                className="flex-initial sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
                 <nav
                     className="hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6">
                     <Link
@@ -121,7 +122,7 @@ export default function NavbarLayout() {
                                     <DropdownMenuSeparator/>
                                     <Link to="/settings"><DropdownMenuItem>Settings</DropdownMenuItem></Link>
                                     <DropdownMenuSeparator/>
-                                    <Link to="/logout"><DropdownMenuItem>Log out</DropdownMenuItem></Link>
+                                    <Link to="/auth/logout"><DropdownMenuItem>Log out</DropdownMenuItem></Link>
                                 </> :
                                 <>
                                     <Link to="/auth/login"><DropdownMenuItem>Log in</DropdownMenuItem></Link>
@@ -131,7 +132,8 @@ export default function NavbarLayout() {
                     </DropdownMenu>
                 </div>
             </header>
-            <Outlet/>
-        </>
+            <Outlet />
+            <Footer />
+        </div>
     );
 }

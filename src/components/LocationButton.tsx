@@ -9,23 +9,19 @@ import {
 import { Button, buttonVariants } from '@/components/ui/button.tsx';
 import { AlertCircle, ChevronRight, MapPin } from 'lucide-react';
 import { Input } from '@/components/ui/input.tsx';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert.tsx';
 import sendReq from '@/utils/sendReq.ts';
-import { getLocation, setLocation } from '@/utils/storage.ts';
+import { useZipLocation } from '@/providers/LocationProvider.tsx';
 
 export default function LocationButton() {
+    const { zip: loc, setZip: setLoc } = useZipLocation();
     const [isOpen, setIsOpen] = useState(false);
-    const [currentLoc, setCurrentLoc] = useState<string | null>(null);
     const [zip, setZip] = useState('');
     const [loading, setLoading] = useState(0);
     const [submitError, setSubmitError] = useState('');
 
     const isDisabled = zip.length !== 5 || loading !== 0;
-
-    useEffect(() => {
-        setCurrentLoc(getLocation());
-    }, []);
 
     const onFormInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSubmitError('');
@@ -65,7 +61,7 @@ export default function LocationButton() {
                 return;
             }
 
-            setLocation(zip);
+            setLoc(`00000${zip}`.slice(-5));
             setIsOpen(false);
         });
     };
@@ -89,7 +85,7 @@ export default function LocationButton() {
                 return;
             }
 
-            setLocation(res.data.zip);
+            setLoc(res.data.zip);
             setIsOpen(false);
         });
     };
@@ -121,10 +117,13 @@ export default function LocationButton() {
     const supportsGeolocation = !!navigator.geolocation;
 
     return (
-        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <Sheet open={isOpen} onOpenChange={open => {
+            setIsOpen(open);
+            if (open) setZip('');
+        }}>
             <SheetTrigger className={buttonVariants({ variant: 'outline', size: 'default', className: '' })}>
                 <MapPin className="h-5 w-5 mr-1" />
-                <span>{currentLoc ? currentLoc : 'Global'}</span>
+                <span>{loc || 'Global'}</span>
             </SheetTrigger>
             <SheetContent>
                 <SheetHeader className="mb-4">
@@ -162,6 +161,10 @@ export default function LocationButton() {
                         Your browser doesn't support geolocation.
                     </AlertDescription>
                 </Alert>}
+                {loc && <Button className="w-full mt-2" variant="ghost" onClick={() => {
+                    setLoc('');
+                    setIsOpen(false);
+                }}>Reset location</Button>}
                 <p className="text-red-600">{submitError}</p>
             </SheetContent>
         </Sheet>

@@ -6,14 +6,14 @@ type UserContextType = {
     loggedIn: boolean;
     firstName: string | null;
     lastName: string | null;
-    updateUser: () => void;
+    updateUser: () => Promise<void>;
 };
 
 const UserContext = createContext<UserContextType>({
     loggedIn: false,
     firstName: null,
     lastName: null,
-    updateUser: () => {}
+    updateUser: async () => {}
 });
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -28,25 +28,24 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        updateUser();
+        updateUser().then();
     }, []);
 
-    const updateUser = () => {
-        sendReq('/auth/user', 'GET')
-            .then(res => {
-                setLoading(false);
+    const updateUser = async () => {
+        const res = await sendReq('/auth/user', 'GET');
 
-                if (!res.fetched || !res.ok) {
-                    setLoggedIn(false);
-                    setFirstName(null);
-                    setLastName(null);
-                    return;
-                }
+        setLoading(false);
 
-                setLoggedIn(true);
-                setFirstName(res.data.firstName);
-                setLastName(res.data.lastName);
-            });
+        if (!res.fetched || !res.ok) {
+            setLoggedIn(false);
+            setFirstName(null);
+            setLastName(null);
+            return;
+        }
+
+        setLoggedIn(true);
+        setFirstName(res.data.firstName);
+        setLastName(res.data.lastName);
     };
 
     const value = {
