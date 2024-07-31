@@ -4,6 +4,7 @@ import Loading from '@/components/Loading.tsx';
 
 type UserContextType = {
     loggedIn: boolean;
+    userId: number | null;
     firstName: string | null;
     lastName: string | null;
     updateUser: () => Promise<void>;
@@ -11,6 +12,7 @@ type UserContextType = {
 
 const UserContext = createContext<UserContextType>({
     loggedIn: false,
+    userId: null,
     firstName: null,
     lastName: null,
     updateUser: async () => {}
@@ -23,6 +25,7 @@ export function useUser() {
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
     const [loggedIn, setLoggedIn] = useState(false);
+    const [userId, setUserId] = useState<number | null>(null);
     const [firstName, setFirstName] = useState<string | null>(null);
     const [lastName, setLastName] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
@@ -38,18 +41,21 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
         if (!res.fetched || !res.ok) {
             setLoggedIn(false);
+            setUserId(null);
             setFirstName(null);
             setLastName(null);
             return;
         }
 
         setLoggedIn(true);
+        setUserId(res.data.userId);
         setFirstName(res.data.firstName);
         setLastName(res.data.lastName);
     };
 
     const value = {
         loggedIn,
+        userId,
         firstName,
         lastName,
         updateUser

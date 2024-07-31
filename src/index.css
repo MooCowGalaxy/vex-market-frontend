@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+    font-family: "Anonymous Pro", monospace;
+}
+
+.font-reading {
+    font-family: 'Open Sans', sans-serif;
+}
+.font-reading > p {
+    font-family: 'Open Sans', sans-serif;
+}
+
 @layer base {
     :root {
         --background: 0 0% 100%;

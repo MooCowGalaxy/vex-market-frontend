@@ -2,8 +2,6 @@ import useRequireAuth from '@/hooks/useRequireAuth.ts';
 import React, { useEffect, useState } from 'react';
 import { Label } from '@/components/ui/label.tsx';
 import { Input } from '@/components/ui/input.tsx';
-import { Textarea } from '@/components/ui/textarea.tsx';
-import LocationButton from '@/components/LocationButton.tsx';
 import { AspectRatio } from '@/components/ui/aspect-ratio.tsx';
 import { Button, buttonVariants } from '@/components/ui/button.tsx';
 import { Plus, X } from 'lucide-react';
@@ -18,11 +16,11 @@ import {
 import toast from 'react-hot-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 import { useZipLocation } from '@/providers/LocationProvider.tsx';
-import sendReq from '@/utils/sendReq.ts';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select.tsx';
+import sendReq, { sendFileReq } from '@/utils/sendReq.ts';
 import { useNavigate } from 'react-router-dom';
+import ListingForm from '@/components/ListingForm.tsx';
 
-type FormData = {
+export type ListFormData = {
     title: string;
     description: string;
     price: number;
@@ -34,13 +32,14 @@ export default function List() {
     const { zip } = useZipLocation();
     const user = useRequireAuth();
     const navigate = useNavigate();
-    const [form, setForm] = useState<FormData>({
+    const [form, setForm] = useState<ListFormData>({
         title: '',
         description: '',
         price: 0,
         condition: '',
         type: ''
     });
+    const [files, setFiles] = useState<File[]>([]);
     const [images, setImages] = useState<string[]>([]);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [newFile, setNewFile] = useState<File | null>(null);
@@ -76,18 +75,6 @@ export default function List() {
         setFormError(formErrors.join('\n'));
     }, [form, images, zip]);
 
-    const onSelectInput = (key: string, value: string) => {
-        setForm({ ...form, [key]: value });
-    };
-
-    const onFormInput = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setForm({ ...form, [e.target.id]: e.target.id === 'price' ? (parseFloat(e.target.value) || 0) : e.target.value });
-    };
-
-    const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        if (!isSubmitDisabled && e.key === 'Enter') onSubmit();
-    };
-
     const onSubmit = () => {
         if (!zip) return;
         setLoading(true);
@@ -99,20 +86,35 @@ export default function List() {
             zip: parseInt(zip),
             condition: form.condition,
             type: form.type
-        }).then(res => {
-            setLoading(false);
-
+        }).then(async res => {
             if (!res.fetched) {
                 setSubmitError('Something went wrong while creating the listing. Please try again later.');
+                setLoading(false);
                 return;
             }
 
-            if (!res.ok) {
+            if (!res.ok || !res.data?.success) {
                 setSubmitError(res.data.error);
+                setLoading(false);
                 return;
             }
 
-            // todo upload images
+            if (!res.data.postId) {
+                setSubmitError('Something went wrong while creating the listing. Please try again later.');
+                setLoading(false);
+                return;
+            }
+
+            await toast.promise(
+                Promise.all(
+                    files.map(file =>
+                        sendFileReq(`/listings/${res.data.postId}/images`, file)
+                    )
+                ), {
+                loading: `Uploading image${images.length !== 1 ? 's' : ''}...`,
+                success: 'Uploaded images!',
+                error: `Failed to upload image${images.length !== 1 ? 's' : ''}.`
+            });
 
             toast.success('Created listing!');
             navigate(`/listing/${res.data.postId}`);
@@ -140,6 +142,7 @@ export default function List() {
         reader.onloadend = () => {
             // add new image data uri to images
             setImages(images => [...images, reader.result as string]);
+            setFiles(files => [...files, newFile]);
             setNewFile(null);
             setDialogOpen(false);
         };
@@ -148,6 +151,7 @@ export default function List() {
 
     const deleteImage = (id: number) => {
         setImages((images) => [...images.slice(0, id), ...images.slice(id + 1, images.length)]);
+        setFiles((files) => [...files.slice(0, id), ...files.slice(id + 1, files.length)]);
     };
 
     return (
@@ -155,94 +159,9 @@ export default function List() {
             background: 'linear-gradient(118deg, rgba(215,212,255,1) 0%, rgba(207,255,216,1) 50%, rgba(174,239,255,1) 100%)'
         }} className="w-full">
             <div className="bg-[#fafafa] flex-1 w-full sm:rounded-xl sm:w-160 sm:mx-auto sm:my-6 px-6 sm:px-8 py-4 sm:py-6">
-                <h1 className="text-2xl font-bold mb-4">Create Listing</h1>
+                <h1 className="text-3xl font-bold mb-4">Create Listing</h1>
 
-                <div className="mb-2">
-                    <Label htmlFor="title">Title</Label>
-                    <Input
-                        className="max-w-full"
-                        id="title"
-                        type="text"
-                        placeholder="Custom Screwdrivers"
-                        maxLength={128}
-                        required
-                        value={form.title}
-                        onChange={onFormInput}
-                        onKeyDown={onKeyDown}
-                    />
-                    <p className="text-xs text-neutral-500">{form.title.length}/128 characters</p>
-                </div>
-                <div className="mb-4">
-                    <Label htmlFor="description">Description</Label>
-                    <Textarea
-                        className="max-w-full"
-                        id="description"
-                        placeholder="Description goes here..."
-                        maxLength={8000}
-                        required
-                        value={form.description}
-                        onChange={onFormInput}
-                        onKeyDown={onKeyDown}
-                    />
-                    <p className="text-xs text-neutral-500">{form.description.length}/8000 characters</p>
-                </div>
-                <div className="mb-4 grid grid-cols-1 xs:grid-cols-2 gap-x-8 gap-y-2">
-                    <div>
-                        <Label htmlFor="price">Price</Label>
-                        <Input
-                            className="max-w-full"
-                            id="price"
-                            type="number"
-                            placeholder="$9.99"
-                            step={0.01}
-                            min={0}
-                            max={10000}
-                            required
-                            value={form.price}
-                            onChange={onFormInput}
-                            onKeyDown={onKeyDown}
-                        />
-                        <p className="text-xs text-neutral-500">Price per each unit</p>
-                    </div>
-                    <div>
-                        <Label>Condition</Label>
-                        <Select value={form.condition} onValueChange={v => onSelectInput('condition', v)}>
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Choose a condition"/>
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="New">New</SelectItem>
-                                <SelectItem value="Like new">Like new</SelectItem>
-                                <SelectItem value="Good">Good</SelectItem>
-                                <SelectItem value="Used">Used</SelectItem>
-                                <SelectItem value="Poor">Poor</SelectItem>
-                                <SelectItem value="Parts only">Parts only</SelectItem>
-                                <SelectItem value="N/A">N/A</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
-                <div className="mb-4 grid grid-cols-1 xs:grid-cols-2 gap-x-8 gap-y-2">
-                    <div>
-                        <Label>Location</Label>
-                        <div>
-                            <LocationButton/>
-                        </div>
-                    </div>
-                    <div>
-                        <Label>Delivery method</Label>
-                        <Select value={form.type} onValueChange={v => onSelectInput('type', v)}>
-                            <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select a method"/>
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="shipping">Shipping only</SelectItem>
-                                <SelectItem value="local">Pickup only</SelectItem>
-                                <SelectItem value="both">Shipping + Pickup</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-                </div>
+                <ListingForm form={form} setForm={setForm} onSubmit={onSubmit} isSubmitDisabled={isSubmitDisabled} />
                 <div className="mb-4">
                     <Label>Images</Label>
                     <p className="text-xs text-neutral-500 mb-0.5">The first image will be used as the listing's
