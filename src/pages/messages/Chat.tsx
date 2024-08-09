@@ -6,7 +6,7 @@ import Loading from '@/components/Loading.tsx';
 import Error from '@/components/Error.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { SendHorizontal } from 'lucide-react';
+import { ImagePlus, SendHorizontal } from 'lucide-react';
 import { MoonLoader } from 'react-spinners';
 import toast from 'react-hot-toast';
 import { MessageData } from '@/types';
@@ -77,7 +77,6 @@ export default function Chat() {
                 if (!before) setTimeout(() => {
                     if (messageList.current) {
                         const childDiv = messageList.current.children.item(1);
-                        console.log(childDiv);
                         if (childDiv) {
                             childDiv.scrollTo(0, childDiv.scrollHeight);
                         }
@@ -142,6 +141,8 @@ export default function Chat() {
             }
         });
     };
+
+    const onImageDialogOpen = () => {};
 
     if (error.length > 0) {
         return (
@@ -221,9 +222,15 @@ export default function Chat() {
                 </ScrollArea>
                 <div className="w-full p-4 border-t">
                     <div className="flex flex-row gap-2">
+                        <Button size="sm" variant="outline" disabled={loading} onClick={onImageDialogOpen}>
+                            {!loading
+                                ? <ImagePlus/>
+                                : <MoonLoader size={16} color='white'/>}
+                        </Button>
                         <Input
                             className="flex-1"
                             type="text"
+                            placeholder="Type your message here..."
                             required
                             value={message}
                             onChange={onMessageInput}

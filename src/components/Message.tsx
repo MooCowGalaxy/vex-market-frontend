@@ -16,8 +16,8 @@ export default function Message({ data, last }: { data: MessageData, last: boole
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger>
-                                <div className={`${isSelf ? 'bg-primary ml-auto' : 'bg-secondary border mr-auto'} w-max rounded-lg rounded-br-sm shadow-sm px-4 py-1`}>
-                                    <p className={`text-base ${isSelf ? 'text-primary-foreground' : 'text-secondary-foreground'}`}>{data.message}</p>
+                                <div className={`${isSelf ? 'bg-primary ml-auto' : 'bg-secondary border mr-auto'} max-w-full rounded-lg rounded-br-sm shadow-sm px-4 py-1`}>
+                                    <p className={`text-base ${isSelf ? 'text-primary-foreground' : 'text-secondary-foreground'} text-left`}>{data.message}</p>
                                 </div>
                             </TooltipTrigger>
                             <TooltipContent>
