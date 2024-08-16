@@ -1,4 +1,4 @@
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet.tsx';
 import { CircleUser, Mail, Menu, Package2, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button.tsx';
@@ -11,10 +11,34 @@ import {
 } from '@/components/ui/dropdown-menu.tsx';
 import { useUser } from '@/providers/UserProvider.tsx';
 import Footer from '@/components/Footer.tsx';
+import React, { useEffect, useState } from 'react';
 
 export default function NavbarLayout() {
     const user = useUser();
     const location = useLocation();
+    const navigate = useNavigate();
+
+    const [searchInput, setSearchInput] = useState('');
+    const [searchParams] = useSearchParams();
+    const searchQuery = searchParams.get('q');
+
+    useEffect(() => {
+        setSearchInput(searchQuery || '');
+    }, [searchQuery]);
+
+    const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchInput(e.target.value);
+    };
+
+    const onSearchKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            submitSearch();
+        }
+    };
+
+    const submitSearch = () => {
+        navigate(`/search?q=${encodeURIComponent(searchInput)}`);
+    };
 
     return (
         <div className="min-w-screen min-h-screen flex flex-col">
@@ -90,16 +114,20 @@ export default function NavbarLayout() {
                     </SheetContent>
                 </Sheet>
                 <div className="flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4">
-                    <form className="ml-auto flex-1 sm:flex-initial">
+                    <div className="ml-auto flex-1 sm:flex-initial">
                         <div className="relative">
-                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground"/>
+                            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
                                 type="search"
                                 placeholder="Search for listings..."
                                 className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
+                                maxLength={200}
+                                value={searchInput}
+                                onChange={onSearchChange}
+                                onKeyDown={onSearchKey}
                             />
                         </div>
-                    </form>
+                    </div>
                     {user.loggedIn && (
                         <Link to="/messages" className="-mr-2 md:mr-0 lg:-mr-2">
                             <Button variant="ghost" size="icon" className="rounded-full">

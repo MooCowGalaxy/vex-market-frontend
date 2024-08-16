@@ -17,7 +17,8 @@ export default function ListingTableDialog({ listingId, type, open, setOpen, rel
     const onOpenChange = (op: boolean) => {
         setOpen(op);
         if (!op) {
-            setTimeout(() => document.body.style.pointerEvents = '', 50);
+            console.log(op);
+            setTimeout(() => document.body.style.pointerEvents = '', 200);
         }
     };
 

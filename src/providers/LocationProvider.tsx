@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { getLocation, setLocation } from '@/utils/storage.ts';
+import Loading from '@/components/Loading.tsx';
 
 type LocationContextType = {
     zip: string | null;
@@ -17,10 +18,12 @@ export function useZipLocation() {
 }
 
 export function LocationProvider({ children }: { children: React.ReactNode }) {
+    const [loading, setLoading] = useState(true);
     const [zip, setZip] = useState<string | null>(null);
 
     useEffect(() => {
         updateZip();
+        setLoading(false);
     }, []);
 
     const updateZip = () => {
@@ -36,6 +39,12 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
         zip,
         setZip: setLoc
     };
+
+    if (loading) {
+        return (
+            <Loading fullscreen={true} />
+        );
+    }
 
     return (
         <LocationContext.Provider value={value}>

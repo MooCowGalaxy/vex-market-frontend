@@ -43,7 +43,7 @@ export default function Home() {
 
     if (error.length > 0) {
         return (
-            <div className="flex flex-row justify-center items-center">
+            <div className="flex-1 flex flex-row justify-center items-center">
                 <div>
                     <h1 className="font-bold text-2xl text-center">Uh oh!</h1>
                     <p className="text-center mb-2">{error}</p>
