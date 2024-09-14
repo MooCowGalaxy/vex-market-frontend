@@ -3,12 +3,13 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { SOCKET_BASE_URL } from '@/vars.ts';
 import sendReq from '@/utils/sendReq.ts';
 import { useUser } from '@/providers/UserProvider.tsx';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { toast as sonnerToast } from 'sonner';
 import { ArrowRight } from 'lucide-react';
 
 const SocketContext = createContext<Socket | null>(null);
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useSocket() {
     return useContext(SocketContext);
 }
@@ -16,6 +17,7 @@ export function useSocket() {
 export function SocketProvider({ children }: { children: React.ReactNode }) {
     const { userId, loggedIn } = useUser();
     const location = useLocation();
+    const navigate = useNavigate();
     const [socket, setSocket] = useState<Socket | null>(null);
 
     const reconnect = () => {
@@ -57,12 +59,14 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
         const onChat = ({
             chatId,
+            chatTitle,
             authorId,
-            authorName,
+            // authorName,
             message
         }: {
             id: number;
             chatId: number;
+            chatTitle: string;
             authorId: number;
             authorName: string;
             message: string;
@@ -70,11 +74,13 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         }) => {
             if (userId === authorId) return;
             if (location.pathname === `/messages/${chatId}`) return;
-            sonnerToast(authorName, {
+            sonnerToast(chatTitle, {
                 description: message,
                 action: {
                     label: <ArrowRight />,
-                    onClick: () => {}
+                    onClick: () => {
+                        navigate(`/messages/${chatId}`);
+                    }
                 }
             });
         };
@@ -90,11 +96,11 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         return () => {
             socket.off('connect', onConnect);
             socket.off('disconnect', onDisconnect);
-            socket.on('chat', onChat);
+            socket.off('chat', onChat);
             // socket.off('auth', onAuth);
             // socket.off('exception', onException);
         };
-    }, [location.pathname, socket, userId]);
+    }, [location.pathname, navigate, socket, userId]);
 
     return (
         <SocketContext.Provider value={socket}>
