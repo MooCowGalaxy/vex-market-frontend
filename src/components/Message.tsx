@@ -10,23 +10,29 @@ export default function Message({ data, last }: { data: MessageData, last: boole
     const isSelf = data.authorId === userId;
 
     return (
-        <div className="w-full">
-            <div className={`relative ${isSelf ? 'float-right pr-4' : 'float-left pl-4'} max-w-[75%] ${last ? 'p-2' : 'p-2 pb-0'}`}>
-                <div>
-                    <TooltipProvider>
-                        <Tooltip>
-                            <TooltipTrigger>
-                                <div className={`${isSelf ? 'bg-primary ml-auto' : 'bg-secondary border mr-auto'} max-w-full rounded-lg rounded-br-sm shadow-sm px-4 py-1`}>
-                                    <p className={`text-base ${isSelf ? 'text-primary-foreground' : 'text-secondary-foreground'} text-left`}>{data.message}</p>
-                                </div>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>{moment(data.timestamp).format('MMMM Do YYYY, h:mm A')}</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </TooltipProvider>
+        <div className={`w-full flex flex-col flex-wrap ${isSelf ? 'items-end' : ''}`}>
+            <div className={`max-w-[75%]`}>
+                <div className={`relative ${isSelf ? 'float-right pr-4' : 'float-left pl-4'} p-2 pb-0.5`}>
+                    <div>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger>
+                                    <div
+                                        className={`${isSelf ? 'bg-primary ml-auto' : 'bg-secondary border mr-auto'} max-w-full rounded-lg rounded-br-sm shadow-sm px-4 py-1`}>
+                                        <p className={`text-base ${isSelf ? 'text-primary-foreground' : 'text-secondary-foreground'} text-left`}>{data.message}</p>
+                                    </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>{moment(data.timestamp).format('MMMM Do YYYY, h:mm A')}</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
+                    </div>
                 </div>
-                {last && <p className="text-xs text-neutral-400 float-right">{moment(data.timestamp).format('LT')}</p>}
+            </div>
+            <div className="w-full">
+                {last && <div
+                    className={`text-xs text-neutral-400 ${isSelf ? 'float-right pr-4' : 'float-left pl-4'}`}>{moment(data.timestamp).format('LT')}</div>}
             </div>
         </div>
     );
