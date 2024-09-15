@@ -3,24 +3,26 @@ import Loading from '@/components/Loading.tsx';
 import { useEffect, useState } from 'react';
 import sendReq from '@/utils/sendReq.ts';
 import Error from '@/components/Error.tsx';
+import { useNavigate } from 'react-router-dom';
+import { User } from 'lucide-react';
+import moment from 'moment';
 
 type Message = {
     id: number;
     postName: string;
     recipientName: string;
-    lastUpdate: string;
-    unread: boolean;
+    lastUpdate: number;
+    unreadCount: number;
 };
 
 export default function Messages() {
     const user = useRequireAuth();
+    const navigate = useNavigate();
     const [messages, setMessages] = useState<Message[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string>('');
 
     useEffect(() => {
-        setLoading(true);
-
         sendReq('/messages', 'GET')
             .then(res => {
                 if (!res.fetched) {
@@ -54,9 +56,23 @@ export default function Messages() {
                     <div>Any chats that you make will be available here.</div>
                 )}
                 {!loading && messages.length > 0 && (
-                    messages.map((message, i) => (
-                        <div key={i}>{message.postName}</div>
-                    ))
+                    <div className="flex flex-col gap-4">
+                        {messages.sort((a, b) => b.lastUpdate - a.lastUpdate).map((message, i) => (
+                            <div className="rounded-lg border p-4 flex flex-row justify-between cursor-pointer"
+                                 key={i} onClick={() => navigate(`/messages/${message.id}`)}>
+                                <div>
+                                    <p className="font-semibold">{message.postName}</p>
+                                    <div className="flex flex-row items-center">
+                                        <User size={18} className="mr-2"/> {message.recipientName}
+                                    </div>
+                                </div>
+                                <div>
+                                    <p>{moment(message.lastUpdate * 1000).calendar()}</p>
+                                    {message.unreadCount > 0 && <div className="ml-auto w-max bg-primary text-sm text-white rounded-full px-2.5">{message.unreadCount} unread</div>}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 )}
             </div>
         </div>

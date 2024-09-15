@@ -57,7 +57,7 @@ export default function Home() {
 
     if (loading) {
         return (
-            <Loading />
+            <Loading text="Loading listings..." />
         );
     }
 

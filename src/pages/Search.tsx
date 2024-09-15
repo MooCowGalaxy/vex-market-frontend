@@ -128,7 +128,7 @@ export default function Search() {
                 {searchResults === null && <Loading/>}
                 {searchResults !== null && searchResults.length === 0 && (
                     <>
-
+                        Nothing was found that matched your search request :(
                     </>
                 )}
                 {searchResults !== null && searchResults.length > 0 && (

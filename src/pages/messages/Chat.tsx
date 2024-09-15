@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import sendReq from '@/utils/sendReq.ts';
 import useRequireAuth from '@/hooks/useRequireAuth.ts';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import Loading from '@/components/Loading.tsx';
 import Error from '@/components/Error.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { ImagePlus, SendHorizontal } from 'lucide-react';
+import { ArrowLeft, ImagePlus, SendHorizontal, User } from 'lucide-react';
 import { MoonLoader } from 'react-spinners';
 import toast from 'react-hot-toast';
 import { MessageData } from '@/types';
@@ -16,8 +16,9 @@ import { useSocket } from '@/providers/SocketProvider.tsx';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 
 export default function Chat() {
-    const { userId } = useRequireAuth();
+    const { userId, updateNotifications } = useRequireAuth();
     const { chatId } = useParams();
+    const navigate = useNavigate();
     const socket = useSocket();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string>('');
@@ -45,52 +46,56 @@ export default function Chat() {
         }
     };
 
-    const fetchMessages = (cId: number, before?: number) => {
+    const fetchMessages = async (cId: number, before?: number) => {
         setLoading(true);
         const url = before ? `/messages/${cId}?before=${before}` : `/messages/${cId}`;
 
-        sendReq(url, 'GET')
-            .then(res => {
-                if (!res.fetched) {
-                    setError('Something went wrong while fetching your messages. Please try again later.');
-                    return;
+        const res = await sendReq(url, 'GET');
+
+        if (!res.fetched) {
+            setError('Something went wrong while fetching your messages. Please try again later.');
+            return;
+        }
+
+        if (!res.ok || !res.data?.success) {
+            setError(res.data.error);
+            return;
+        }
+
+        setLoading(false);
+        setError('');
+        setChatInfo({
+            postName: res.data.postName,
+            postId: res.data.postId,
+            recipientName: res.data.recipientName
+        });
+        setHasMoreMessages(res.data.messages.length === 25);
+        setMessages(msgs => {
+            const combined = [...msgs, ...res.data.messages];
+
+            return combined.sort((a, b) => a.id - b.id);
+        });
+
+        if (!before) setTimeout(() => {
+            if (messageList.current) {
+                const childDiv = messageList.current.children.item(1);
+                if (childDiv) {
+                    childDiv.scrollTo(0, childDiv.scrollHeight);
                 }
-
-                if (!res.ok || !res.data?.success) {
-                    setError(res.data.error);
-                    return;
-                }
-
-                setLoading(false);
-                setError('');
-                setChatInfo({
-                    postName: res.data.postName,
-                    postId: res.data.postId,
-                    recipientName: res.data.recipientName
-                });
-                setHasMoreMessages(res.data.messages.length === 25);
-                setMessages(msgs => {
-                    const combined = [...msgs, ...res.data.messages];
-
-                    return combined.sort((a, b) => a.id - b.id);
-                });
-                if (!before) setTimeout(() => {
-                    if (messageList.current) {
-                        const childDiv = messageList.current.children.item(1);
-                        if (childDiv) {
-                            childDiv.scrollTo(0, childDiv.scrollHeight);
-                        }
-                    }
-                }, 50);
-            });
+            }
+        }, 50);
     };
 
     useEffect(() => {
         if (!chatId || isNaN(parseInt(chatId))) return;
 
         setMessages([]);
-        fetchMessages(parseInt(chatId));
+        fetchMessages(parseInt(chatId)).then();
     }, [userId, chatId]);
+
+    useEffect(() => {
+        updateNotifications().then();
+    }, [messages, updateNotifications]);
 
     useEffect(() => {
         if (!socket) return;
@@ -106,7 +111,7 @@ export default function Chat() {
         return () => {
             socket.off('chat', onMessage);
         }
-    }, [chatId, socket]);
+    }, [chatId, socket, updateNotifications]);
 
     const onMessageInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setMessage(e.target.value);
@@ -200,11 +205,18 @@ export default function Chat() {
         <div className="flex-1 w-full flex flex-row justify-center">
             <div className="w-160 h-[calc(100vh-6rem)] border-x flex flex-col">
                 <div className="w-full p-4 border-b">
+                    <div className="flex flex-row items-center w-max cursor-pointer mb-2 text-sm" onClick={() => navigate('/messages')}>
+                        <ArrowLeft size={14} className="mr-1"/> Messages
+                    </div>
+
                     {chatInfo.postId
-                        ? <Link to={`/listing/${chatInfo.postId}`} className="font-bold text-xl">{chatInfo.postName}</Link>
+                        ? <Link to={`/listing/${chatInfo.postId}`}
+                                className="font-bold text-xl">{chatInfo.postName}</Link>
                         : <p className="font-bold text-xl">Deleted post</p>}
 
-                    <p>{chatInfo.recipientName}</p>
+                    <div className="flex flex-row items-center">
+                        <User size={18} className="mr-2"/> {chatInfo.recipientName}
+                    </div>
                 </div>
                 <ScrollArea className="flex-1" ref={messageList}>
                     <div className="flex flex-col py-4">

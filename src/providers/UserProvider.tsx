@@ -7,7 +7,9 @@ type UserContextType = {
     userId: number | null;
     firstName: string | null;
     lastName: string | null;
+    notifications: number | null;
     updateUser: () => Promise<void>;
+    updateNotifications: () => Promise<void>;
 };
 
 const UserContext = createContext<UserContextType>({
@@ -15,7 +17,9 @@ const UserContext = createContext<UserContextType>({
     userId: null,
     firstName: null,
     lastName: null,
-    updateUser: async () => {}
+    notifications: null,
+    updateUser: async () => {},
+    updateNotifications: async () => {},
 });
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -28,6 +32,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const [userId, setUserId] = useState<number | null>(null);
     const [firstName, setFirstName] = useState<string | null>(null);
     const [lastName, setLastName] = useState<string | null>(null);
+    const [notifications, setNotifications] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -44,6 +49,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             setUserId(null);
             setFirstName(null);
             setLastName(null);
+            setNotifications(null);
             return;
         }
 
@@ -51,6 +57,18 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         setUserId(res.data.userId);
         setFirstName(res.data.firstName);
         setLastName(res.data.lastName);
+        setNotifications(res.data.notifications);
+    };
+
+    const updateNotifications = async () => {
+        const res = await sendReq('/auth/user/notifications', 'GET');
+
+        if (!res.fetched || !res.ok) {
+            setNotifications(0);
+            return;
+        }
+
+        setNotifications(res.data.notifications);
     };
 
     const value = {
@@ -58,7 +76,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         userId,
         firstName,
         lastName,
-        updateUser
+        notifications,
+        updateUser,
+        updateNotifications
     };
 
     if (loading) {

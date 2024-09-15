@@ -13,8 +13,9 @@ export default function Loading({ fullscreen = false, text = undefined }: { full
     }
 
     return (
-        <div className="flex-1 flex flex-row justify-center items-center">
+        <div className="flex-1 flex flex-col gap-2 justify-center items-center">
             <MoonLoader size={24} />
+            <div>{text}</div>
         </div>
     );
 }

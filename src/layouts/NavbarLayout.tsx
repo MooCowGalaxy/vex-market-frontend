@@ -119,7 +119,7 @@ export default function NavbarLayout() {
                             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
                                 type="search"
-                                placeholder="Search for listings..."
+                                placeholder="Search for listings"
                                 className="pl-8 sm:w-[300px] md:w-[200px] lg:w-[300px]"
                                 maxLength={200}
                                 value={searchInput}
@@ -130,16 +130,22 @@ export default function NavbarLayout() {
                     </div>
                     {user.loggedIn && (
                         <Link to="/messages" className="-mr-2 md:mr-0 lg:-mr-2">
-                            <Button variant="ghost" size="icon" className="rounded-full">
-                                <Mail className="h-5 w-5" />
-                                <span className="sr-only">Toggle user menu</span>
-                            </Button>
+                            <div className="relative">
+                                <Button variant="ghost" size="icon" className="rounded-full">
+                                    <Mail className="h-5 w-5"/>
+                                    <span className="sr-only">Toggle user menu</span>
+                                </Button>
+                                {user.notifications !== null && user.notifications > 0 && <div
+                                    className="absolute top-0 right-0 rounded-full w-4 h-4 flex flex-col items-center justify-center bg-primary">
+                                    <div className="mx-auto text-center text-white text-xs font-reading">{user.notifications}</div>
+                                </div>}
+                            </div>
                         </Link>
                     )}
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon" className="rounded-full">
-                                <CircleUser className="h-5 w-5" />
+                                <CircleUser className="h-5 w-5"/>
                                 <span className="sr-only">Toggle user menu</span>
                             </Button>
                         </DropdownMenuTrigger>

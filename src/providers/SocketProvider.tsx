@@ -15,7 +15,7 @@ export function useSocket() {
 }
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
-    const { userId, loggedIn } = useUser();
+    const { userId, loggedIn, updateNotifications } = useUser();
     const location = useLocation();
     const navigate = useNavigate();
     const [socket, setSocket] = useState<Socket | null>(null);
@@ -73,7 +73,14 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
             image: string | null;
         }) => {
             if (userId === authorId) return;
-            if (location.pathname === `/messages/${chatId}`) return;
+            if (location.pathname === `/messages/${chatId}`) {
+                sendReq(`/messages/${chatId}/read`, 'POST').then(() => {
+                    updateNotifications().then();
+                });
+                return;
+            } else {
+                updateNotifications().then();
+            }
             sonnerToast(chatTitle, {
                 description: message,
                 action: {
@@ -100,7 +107,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
             // socket.off('auth', onAuth);
             // socket.off('exception', onException);
         };
-    }, [location.pathname, navigate, socket, userId]);
+    }, [location.pathname, navigate, socket, updateNotifications, userId]);
 
     return (
         <SocketContext.Provider value={socket}>

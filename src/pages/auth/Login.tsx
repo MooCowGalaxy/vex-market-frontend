@@ -3,7 +3,7 @@ import { Label } from '@/components/ui/label.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button, buttonVariants } from '@/components/ui/button.tsx';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { emailRegex } from '@/vars.ts';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 import sendReq from '@/utils/sendReq.ts';
@@ -78,6 +78,12 @@ export default function Login() {
             });
         });
     };
+
+    useEffect(() => {
+        if (user.loggedIn) {
+            navigate(searchParams.get('to') || '/');
+        }
+    }, [navigate, searchParams, user.loggedIn]);
 
     return (
         <>
