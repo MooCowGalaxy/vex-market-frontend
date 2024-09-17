@@ -213,6 +213,7 @@ export default function Register() {
                         : <Button type="submit" className="w-full" onClick={onSubmit} disabled={isSubmitDisabled}>
                             {loading ? 'Creating your account...' : 'Create an account'}
                         </Button>}
+                    <p className="text-xs text-neutral-500">By registering an account, you agree to our <Link to="/legal/terms" className="underline">Terms of Service</Link> and <Link to="/legal/privacy" className="underline">Privacy Policy</Link></p>
                     {/*<Button variant="outline" className="w-full">
                         Sign up with Discord
                     </Button>*/}
