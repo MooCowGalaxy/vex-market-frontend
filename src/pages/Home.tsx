@@ -30,6 +30,7 @@ export default function Home() {
                 }
 
                 setLoading(false);
+                setError('');
                 setListings({
                     local: res.data.local,
                     shipping: res.data.shipping
