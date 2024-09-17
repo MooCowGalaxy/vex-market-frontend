@@ -23,6 +23,9 @@ import Logout from '@/pages/auth/Logout.tsx';
 import { LocationProvider } from '@/providers/LocationProvider.tsx';
 import EditListing from '@/pages/listing/EditListing.tsx';
 import { SocketProvider } from '@/providers/SocketProvider.tsx';
+import Terms from '@/pages/legal/Terms.tsx';
+import Privacy from '@/pages/legal/Privacy.tsx';
+import LegalLayout from '@/layouts/LegalLayout.tsx';
 
 function App() {
     return (
@@ -43,6 +46,10 @@ function App() {
                                 <Route path="messages" element={<Messages />} />
                                 <Route path="messages/:chatId" element={<Chat />} />
                                 <Route path="settings" element={<Settings />} />
+                                <Route path="legal" element={<LegalLayout />}>
+                                    <Route path="terms" element={<Terms />} />
+                                    <Route path="privacy" element={<Privacy />} />
+                                </Route>
                             </Route>
                             <Route path="/auth" element={<AuthLayout />}>
                                 <Route path="login" element={<Login />} />
