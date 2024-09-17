@@ -7,6 +7,7 @@ type UserContextType = {
     userId: number | null;
     firstName: string | null;
     lastName: string | null;
+    email: string | null;
     notifications: number | null;
     updateUser: () => Promise<void>;
     updateNotifications: () => Promise<void>;
@@ -17,6 +18,7 @@ const UserContext = createContext<UserContextType>({
     userId: null,
     firstName: null,
     lastName: null,
+    email: null,
     notifications: null,
     updateUser: async () => {},
     updateNotifications: async () => {},
@@ -32,6 +34,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     const [userId, setUserId] = useState<number | null>(null);
     const [firstName, setFirstName] = useState<string | null>(null);
     const [lastName, setLastName] = useState<string | null>(null);
+    const [email, setEmail] = useState<string | null>(null);
     const [notifications, setNotifications] = useState<number | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -49,6 +52,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
             setUserId(null);
             setFirstName(null);
             setLastName(null);
+            setEmail(null);
             setNotifications(null);
             return;
         }
@@ -57,6 +61,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         setUserId(res.data.userId);
         setFirstName(res.data.firstName);
         setLastName(res.data.lastName);
+        setEmail(res.data.email);
         setNotifications(res.data.notifications);
     };
 
@@ -76,6 +81,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         userId,
         firstName,
         lastName,
+        email,
         notifications,
         updateUser,
         updateNotifications

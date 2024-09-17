@@ -10,9 +10,10 @@ import { Input } from '@/components/ui/input.tsx';
 import { Button, buttonVariants } from '@/components/ui/button.tsx';
 import { Link } from 'react-router-dom';
 import React, { useState } from 'react';
-import { IoArrowForward, IoCheckmark, IoCloseSharp } from 'react-icons/io5';
+import { IoArrowForward } from 'react-icons/io5';
 import sendReq from '@/utils/sendReq.ts';
 import { emailRegex } from '@/vars.ts';
+import { getPasswordRequirements, PasswordValidation } from '@/components/PasswordValidation.tsx';
 
 export default function Register() {
     const [firstName, setFirstName] = useState('');
@@ -25,12 +26,7 @@ export default function Register() {
     const [submitError, setSubmitError] = useState('');
     const [success, setSuccess] = useState(false);
 
-    const passwordReq = {
-        length: password.length >= 8 && password.length <= 200,
-        upper: /[A-Z]/.test(password),
-        lower: /[a-z]/.test(password),
-        number: /[0-9]/.test(password)
-    };
+    const passwordReq = getPasswordRequirements(password);
 
     const isSubmitDisabled = formError === null || formError.length > 0 || Object.values(passwordReq).includes(false) || loading;
 
@@ -189,22 +185,7 @@ export default function Register() {
                         />
                     </div>
                     <div className="grid gap-2 text-sm -mt-2">
-                        <div className={`${passwordReq.length ? 'text-green-600' : 'text-red-600'} flex flex-row gap-1 items-center`}>
-                            {passwordReq.length ? <IoCheckmark size={18} /> : <IoCloseSharp size={18} />}
-                            Between 8 and 200 characters long
-                        </div>
-                        <div className={`${passwordReq.upper ? 'text-green-600' : 'text-red-600'} flex flex-row gap-1 items-center`}>
-                            {passwordReq.upper ? <IoCheckmark size={18} /> : <IoCloseSharp size={18} />}
-                            Contains an uppercase letter
-                        </div>
-                        <div className={`${passwordReq.lower ? 'text-green-600' : 'text-red-600'} flex flex-row gap-1 items-center`}>
-                            {passwordReq.lower ? <IoCheckmark size={18} /> : <IoCloseSharp size={18} />}
-                            Contains a lowercase letter
-                        </div>
-                        <div className={`${passwordReq.number ? 'text-green-600' : 'text-red-600'} flex flex-row gap-1 items-center`}>
-                            {passwordReq.number ? <IoCheckmark size={18} /> : <IoCloseSharp size={18} />}
-                            Contains a number
-                        </div>
+                        <PasswordValidation password={password} />
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="passwordConfirm">Confirm Password</Label>
