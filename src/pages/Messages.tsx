@@ -4,12 +4,13 @@ import { useEffect, useState } from 'react';
 import sendReq from '@/utils/sendReq.ts';
 import Error from '@/components/Error.tsx';
 import { useNavigate } from 'react-router-dom';
-import { User } from 'lucide-react';
+import { Archive, User } from 'lucide-react';
 import moment from 'moment';
 
 type Message = {
     id: number;
-    postName: string;
+    postName: string | null;
+    postArchived: boolean | null;
     recipientName: string;
     lastUpdate: number;
     unreadCount: number;
@@ -61,7 +62,10 @@ export default function Messages() {
                             <div className="rounded-lg border p-4 flex flex-row justify-between cursor-pointer"
                                  key={i} onClick={() => navigate(`/messages/${message.id}`)}>
                                 <div>
-                                    <p className="font-semibold">{message.postName}</p>
+                                    <div className="font-semibold flex flex-row items-center">
+                                        {message.postArchived ? <Archive className="stroke-yellow-500 mr-2" size={18} /> : ''}
+                                        {message.postName !== null ? message.postName : 'Deleted Post'}
+                                    </div>
                                     <div className="flex flex-row items-center">
                                         <User size={18} className="mr-2"/> {message.recipientName}
                                     </div>

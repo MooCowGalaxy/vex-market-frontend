@@ -6,7 +6,7 @@ import Loading from '@/components/Loading.tsx';
 import Error from '@/components/Error.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { Button } from '@/components/ui/button.tsx';
-import { ArrowLeft, ImagePlus, SendHorizontal, User } from 'lucide-react';
+import { Archive, ArrowLeft, ImagePlus, SendHorizontal, User } from 'lucide-react';
 import { MoonLoader } from 'react-spinners';
 import toast from 'react-hot-toast';
 import { MessageData } from '@/types';
@@ -23,7 +23,7 @@ export default function Chat() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string>('');
     const [hasMoreMessages, setHasMoreMessages] = useState<boolean>(false);
-    const [chatInfo, setChatInfo] = useState<{ postName: string | null; postId: number | null; recipientName: string } | null>(null);
+    const [chatInfo, setChatInfo] = useState<{ postName: string | null; postArchived: boolean | null; postId: number | null; recipientName: string } | null>(null);
     const [messages, setMessages] = useState<MessageData[]>([]);
     const [message, setMessage] = useState('');
     const messageInput = useRef<HTMLInputElement>(null);
@@ -66,6 +66,7 @@ export default function Chat() {
         setError('');
         setChatInfo({
             postName: res.data.postName,
+            postArchived: res.data.postArchived,
             postId: res.data.postId,
             recipientName: res.data.recipientName
         });
@@ -211,7 +212,12 @@ export default function Chat() {
 
                     {chatInfo.postId
                         ? <Link to={`/listing/${chatInfo.postId}`}
-                                className="font-bold text-xl">{chatInfo.postName}</Link>
+                                className="font-bold text-xl">
+                            <div className="font-semibold flex flex-row items-center">
+                                {chatInfo.postArchived ? <Archive className="stroke-yellow-500 mr-2" size={18}/> : ''}
+                                {chatInfo.postName !== null ? chatInfo.postName : 'Deleted Post'}
+                            </div>
+                        </Link>
                         : <p className="font-bold text-xl">Deleted post</p>}
 
                     <div className="flex flex-row items-center">

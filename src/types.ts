@@ -9,6 +9,7 @@ export type ListingProps = {
     images: string[];
     created: number;
     lastUpdated: number;
+    archived: boolean;
     authorId: number;
 };
 

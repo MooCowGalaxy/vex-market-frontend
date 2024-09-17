@@ -6,7 +6,7 @@ import sendReq from '@/utils/sendReq.ts';
 import ImageGallery from 'react-image-gallery';
 import '@/assets/react-gallery.css';
 import { Button } from '@/components/ui/button.tsx';
-import { ArrowLeft, ChevronLeft, ChevronRight, MapPin, SendHorizontal } from 'lucide-react';
+import { Archive, ArrowLeft, ChevronLeft, ChevronRight, MapPin, SendHorizontal } from 'lucide-react';
 import { Input } from '@/components/ui/input.tsx';
 import { MoonLoader } from 'react-spinners';
 import toast from 'react-hot-toast';
@@ -128,9 +128,17 @@ export default function ListingDetails() {
                     </div>
                 </div>
                 <div>
-                    <div className="flex flex-row items-center text-neutral-500 text-md -ml-0.5 mb-1"><MapPin
-                        size={20}/><p className="ml-1">{listing.zipFriendly}</p></div>
-                    <h1 className="text-4xl font-bold text-neutral-900 mb-4">{listing.title}</h1>
+                    {listing.archived && <div className="flex flex-row items-center text-yellow-500 mb-4">
+                        <Archive className="stroke-yellow-500 mr-2" size={18}/>
+                        Archived
+                    </div>}
+                    <div className="flex flex-row items-center text-neutral-500 text-md -ml-0.5 mb-1">
+                        <MapPin size={20}/>
+                        <p className="ml-1">{listing.zipFriendly}</p>
+                    </div>
+                    <h1 className="text-4xl font-bold text-neutral-900 mb-4">
+                        {listing.title}
+                    </h1>
                     <p className="text-2xl font-semibold text-neutral-900 mb-4">${parseFloat(listing.price.toString()).toFixed(2)}</p>
                     <p className="mt-6 font-bold text-lg">About this item</p>
                     <div className="font-reading mb-4">
@@ -147,7 +155,7 @@ export default function ListingDetails() {
                             <p>{deliveryText[listing.type]}</p>
                         </div>
                     </div>
-                    {!isAuthor && <div className="sticky bg-white bottom-6 rounded-lg shadow border mt-4 p-2">
+                    {!listing.archived && !isAuthor && <div className="sticky bg-white bottom-6 rounded-lg shadow border mt-4 p-2">
                         <p className="text-sm font-semibold mb-2">Send a message to the seller</p>
                         <div className="flex flex-row gap-2">
                             {user.loggedIn && <>
@@ -175,9 +183,12 @@ export default function ListingDetails() {
                                 </Button>}
                         </div>
                     </div>}
-                    {isAuthor && <Button className="w-full mt-4" onClick={() => {
+                    {!listing.archived && isAuthor && <Button className="w-full mt-4" onClick={() => {
                         navigate(`/listing/${listingId}/edit`);
                     }}>Edit Post</Button>}
+                    {listing.archived && <div className="w-full mt-4 rounded-lg px-4 py-2 bg-secondary cursor-not-allowed text-center">
+                        Post is archived
+                    </div>}
                 </div>
             </div>
         </>
