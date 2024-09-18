@@ -16,7 +16,7 @@ export default function ForgotPassword() {
     const [submitError, setSubmitError] = useState('');
     const [success, setSuccess] = useState(false);
 
-    const isSubmitDisabled = formError === null || formError.length > 0 || loading;
+    const isSubmitDisabled = (formError !== null && formError.length > 0) || email.length === 0 || loading;
 
     const onFormInput = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSubmitError('');
@@ -24,7 +24,8 @@ export default function ForgotPassword() {
         setEmail(e.target.value);
 
         if (e.target.value.length === 0) setFormError('Email is required');
-        if (!emailRegex.test(e.target.value)) setFormError('Email is invalid');
+        else if (!emailRegex.test(e.target.value)) setFormError('Email is invalid');
+        else setFormError(null);
     };
 
     const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -101,7 +102,7 @@ export default function ForgotPassword() {
                                     size: 'default',
                                     className: 'cursor-default opacity-50 w-full'
                                 })}>
-                                    Log in
+                                    Reset Password
                                 </TooltipTrigger>
                                 <TooltipContent>
                                     {formError.split('\n').map((error, i) => <p key={i}>{error}</p>)}
@@ -109,8 +110,8 @@ export default function ForgotPassword() {
                             </Tooltip>
                         </TooltipProvider>
                         : <Button type="submit" className="w-full" onClick={onSubmit}
-                                  disabled={formError === null || loading}>
-                            {loading ? 'Loading...' : 'Reset password'}
+                                  disabled={isSubmitDisabled}>
+                            {loading ? 'Loading...' : 'Reset Password'}
                         </Button>}
                     <p className="text-red-600 -mt-2">{submitError}</p>
                 </div>
