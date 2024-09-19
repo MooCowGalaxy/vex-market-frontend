@@ -102,7 +102,7 @@ export default function ForgotPassword() {
                                     size: 'default',
                                     className: 'cursor-default opacity-50 w-full'
                                 })}>
-                                    Reset Password
+                                    Reset password
                                 </TooltipTrigger>
                                 <TooltipContent>
                                     {formError.split('\n').map((error, i) => <p key={i}>{error}</p>)}
@@ -111,7 +111,7 @@ export default function ForgotPassword() {
                         </TooltipProvider>
                         : <Button type="submit" className="w-full" onClick={onSubmit}
                                   disabled={isSubmitDisabled}>
-                            {loading ? 'Loading...' : 'Reset Password'}
+                            {loading ? 'Loading...' : 'Reset password'}
                         </Button>}
                     <p className="text-red-600 -mt-2">{submitError}</p>
                 </div>
