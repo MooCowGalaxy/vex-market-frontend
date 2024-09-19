@@ -8,8 +8,11 @@ import React, { useState } from 'react';
 import { emailRegex } from '@/vars.ts';
 import sendReq from '@/utils/sendReq.ts';
 import { IoArrowForward } from 'react-icons/io5';
+import useTitle from '@/hooks/useTitle.ts';
 
 export default function ForgotPassword() {
+    useTitle('Forgot Password - VEX Market');
+
     const [email, setEmail] = useState('');
     const [formError, setFormError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);

@@ -4,8 +4,10 @@ import sendReq from '@/utils/sendReq.ts';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { useUser } from '@/providers/UserProvider.tsx';
+import useTitle from '@/hooks/useTitle.ts';
 
 export default function Logout() {
+    useTitle('Logging out... - VEX Market');
     const user = useUser();
     const navigate = useNavigate();
 

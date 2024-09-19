@@ -7,8 +7,11 @@ import { Button } from '@/components/ui/button.tsx';
 import ListingCard from '@/components/ListingCard.tsx';
 import EmptyListingCard from '@/components/EmptyListingCard.tsx';
 import { useZipLocation } from '@/providers/LocationProvider.tsx';
+import useTitle from '@/hooks/useTitle.ts';
 
 export default function Home() {
+    useTitle('Browse VEX Parts - VEX Market');
+
     const { zip } = useZipLocation();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');

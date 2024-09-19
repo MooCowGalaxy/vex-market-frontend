@@ -14,8 +14,11 @@ import { IoArrowForward } from 'react-icons/io5';
 import sendReq from '@/utils/sendReq.ts';
 import { emailRegex } from '@/vars.ts';
 import { getPasswordRequirements, PasswordValidation } from '@/components/PasswordValidation.tsx';
+import useTitle from '@/hooks/useTitle.ts';
 
 export default function Register() {
+    useTitle('Register - VEX Market');
+
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');

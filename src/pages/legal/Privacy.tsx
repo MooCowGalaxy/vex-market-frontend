@@ -1,4 +1,5 @@
 import Markdown from 'react-markdown';
+import useTitle from '@/hooks/useTitle.ts';
 
 const markdownText = `# Privacy Policy
 
@@ -34,6 +35,8 @@ If you have any questions or concerns about this Privacy Policy, please contact 
 By using VEXMarket.com, you agree to the collection and use of information in accordance with this Privacy Policy.`;
 
 export default function Privacy() {
+    useTitle('Privacy Policy - VEX Market');
+
     return (
         <Markdown className="markdown-content">
             {markdownText}

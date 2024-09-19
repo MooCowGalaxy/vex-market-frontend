@@ -2,7 +2,7 @@ import { useUser } from '@/providers/UserProvider.tsx';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 
-function useRequireAuth() {
+export default function useRequireAuth() {
     const user = useUser();
     const location = useLocation();
     const navigate = useNavigate();
@@ -15,5 +15,3 @@ function useRequireAuth() {
 
     return user;
 }
-
-export default useRequireAuth;

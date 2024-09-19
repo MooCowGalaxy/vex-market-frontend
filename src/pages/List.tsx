@@ -19,6 +19,7 @@ import { useZipLocation } from '@/providers/LocationProvider.tsx';
 import sendReq, { sendFileReq } from '@/utils/sendReq.ts';
 import { useNavigate } from 'react-router-dom';
 import ListingForm from '@/components/ListingForm.tsx';
+import useTitle from '@/hooks/useTitle.ts';
 
 export type ListFormData = {
     title: string;
@@ -29,6 +30,8 @@ export type ListFormData = {
 };
 
 export default function List() {
+    useTitle(`Create Listing - VEX Market`);
+
     const { zip } = useZipLocation();
     const user = useRequireAuth();
     const navigate = useNavigate();

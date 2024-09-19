@@ -1,4 +1,5 @@
 import Markdown from 'react-markdown';
+import useTitle from '@/hooks/useTitle.ts';
 
 const markdownText = `# Terms of Service
 
@@ -77,6 +78,8 @@ If you have any questions or concerns about these Terms, please contact us at le
 By using VEXMarket.com, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.`;
 
 export default function Terms() {
+    useTitle('Terms of Service - VEX Market');
+
     return (
         <Markdown className="markdown-content">
             {markdownText}

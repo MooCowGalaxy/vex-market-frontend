@@ -10,8 +10,11 @@ import { ListFormData } from '@/pages/List.tsx';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 import { Button, buttonVariants } from '@/components/ui/button.tsx';
 import toast from 'react-hot-toast';
+import useTitle from '@/hooks/useTitle.ts';
 
 export default function EditListing() {
+    useTitle('Edit Listing - VEX Market');
+
     const navigate = useNavigate();
     const user = useRequireAuth();
     const { zip } = useZipLocation();

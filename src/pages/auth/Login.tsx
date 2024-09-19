@@ -9,8 +9,11 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import sendReq from '@/utils/sendReq.ts';
 import toast from 'react-hot-toast';
 import { useUser } from '@/providers/UserProvider.tsx';
+import useTitle from '@/hooks/useTitle.ts';
 
 export default function Login() {
+    useTitle('Log in - VEX Market');
+
     const user = useUser();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');

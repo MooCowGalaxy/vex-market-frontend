@@ -7,12 +7,16 @@ import { ListingProps } from '@/types.ts';
 import sendReq from '@/utils/sendReq.ts';
 import { useZipLocation } from '@/providers/LocationProvider.tsx';
 import { Button } from '@/components/ui/button.tsx';
+import useTitle from '@/hooks/useTitle.ts';
 
 export default function Search() {
     const navigate = useNavigate();
     const { zip } = useZipLocation();
     const [searchParams] = useSearchParams();
     const searchQuery = searchParams.get('q');
+    useTitle(searchQuery ?
+        `Results for "${searchQuery.length > 50 ? `${searchQuery.slice(0, 50)}...` : searchQuery}" - VEX Market` :
+        `Search Results - VEX Market`);
     const searchPage = parseInt(searchParams.get('page') || '1') || 1;
     const [maxPage, setMaxPage] = useState(1);
     const [searchResults, setSearchResults] = useState<ListingProps[] | null>(null);

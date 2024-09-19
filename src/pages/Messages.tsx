@@ -6,6 +6,7 @@ import Error from '@/components/Error.tsx';
 import { useNavigate } from 'react-router-dom';
 import { Archive, User } from 'lucide-react';
 import moment from 'moment';
+import useTitle from '@/hooks/useTitle.ts';
 
 type Message = {
     id: number;
@@ -17,6 +18,8 @@ type Message = {
 };
 
 export default function Messages() {
+    useTitle('Your Messages - VEX Market');
+
     const user = useRequireAuth();
     const navigate = useNavigate();
     const [messages, setMessages] = useState<Message[]>([]);

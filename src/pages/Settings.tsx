@@ -6,8 +6,11 @@ import { Button } from '@/components/ui/button.tsx';
 import { MoonLoader } from 'react-spinners';
 import sendReq from '@/utils/sendReq.ts';
 import toast from 'react-hot-toast';
+import useTitle from '@/hooks/useTitle.ts';
 
 export default function Settings() {
+    useTitle('Settings - VEX Market');
+
     const user = useRequireAuth();
     const [loading, setLoading] = useState(false);
     const [newPassword, setNewPassword] = useState('');

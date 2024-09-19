@@ -12,6 +12,7 @@ import { MoonLoader } from 'react-spinners';
 import toast from 'react-hot-toast';
 import { useUser } from '@/providers/UserProvider.tsx';
 import Error from '@/components/Error.tsx';
+import useTitle from '@/hooks/useTitle.ts';
 
 const deliveryText: { [key: string]: string } = {
     shipping: 'Shipping only',
@@ -24,6 +25,9 @@ export default function ListingDetails() {
     const { id: listingId } = useParams();
     const navigate = useNavigate();
     const [listing, setListing] = useState<ListingProps | null>(null);
+    useTitle(listing ?
+        `${listing.title.length > 50 ? `${listing.title.slice(0, 50)}...` : listing.title} - VEX Market` :
+        'Listing Details - VEX Market');
     const [error, setError] = useState('');
 
     const [message, setMessage] = useState('');

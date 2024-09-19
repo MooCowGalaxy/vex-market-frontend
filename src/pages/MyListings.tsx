@@ -13,6 +13,7 @@ import { EllipsisVertical } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs.tsx';
 import ListingTableDialog from '@/components/ListingTableDialog.tsx';
+import useTitle from '@/hooks/useTitle.ts';
 
 type PartialListing = {
     id: number;
@@ -24,6 +25,8 @@ type PartialListing = {
 };
 
 export default function MyListings() {
+    useTitle('Your Listings - VEX Market');
+
     const user = useRequireAuth();
     const navigate = useNavigate();
     const [tab, setTab] = useState('active');

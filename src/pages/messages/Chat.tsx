@@ -14,6 +14,7 @@ import Message from '@/components/Message.tsx';
 import moment from 'moment';
 import { useSocket } from '@/providers/SocketProvider.tsx';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
+import useTitle from '@/hooks/useTitle.ts';
 
 export default function Chat() {
     const { userId, updateNotifications } = useRequireAuth();
@@ -24,6 +25,9 @@ export default function Chat() {
     const [error, setError] = useState<string>('');
     const [hasMoreMessages, setHasMoreMessages] = useState<boolean>(false);
     const [chatInfo, setChatInfo] = useState<{ postName: string | null; postArchived: boolean | null; postId: number | null; recipientName: string } | null>(null);
+    useTitle(chatInfo && chatInfo.postName ?
+        `${chatInfo.postName.length > 50 ? `${chatInfo.postName.slice(0, 50)}...` : chatInfo.postName} - VEX Market` :
+        `Message - VEX Market`);
     const [messages, setMessages] = useState<MessageData[]>([]);
     const [message, setMessage] = useState('');
     const messageInput = useRef<HTMLInputElement>(null);

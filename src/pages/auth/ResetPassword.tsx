@@ -9,8 +9,11 @@ import { Label } from '@/components/ui/label.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import { getPasswordRequirements, PasswordValidation } from '@/components/PasswordValidation.tsx';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip.tsx';
+import useTitle from '@/hooks/useTitle.ts';
 
 export default function ResetPassword() {
+    useTitle('Reset Password - VEX Market');
+
     const { token } = useParams();
     const [loading, setLoading] = useState(true);
     const [tokenError, setTokenError] = useState('');

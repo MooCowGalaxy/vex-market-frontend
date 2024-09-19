@@ -5,8 +5,11 @@ import { useEffect, useState } from 'react';
 import { MoonLoader } from 'react-spinners';
 import sendReq from '@/utils/sendReq.ts';
 import { IoArrowForward } from 'react-icons/io5';
+import useTitle from '@/hooks/useTitle.ts';
 
 export default function VerifyEmail() {
+    useTitle('Verify Email - VEX Market');
+
     const { token } = useParams();
     const [loading, setLoading] = useState(true);
     const [tokenError, setTokenError] = useState('');
