@@ -1,18 +1,9 @@
 import useRequireAuth from '@/hooks/useRequireAuth.ts';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Label } from '@/components/ui/label.tsx';
-import { Input } from '@/components/ui/input.tsx';
 import { AspectRatio } from '@/components/ui/aspect-ratio.tsx';
 import { Button, buttonVariants } from '@/components/ui/button.tsx';
 import { Plus, X } from 'lucide-react';
-import {
-    Dialog,
-    DialogContent, DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger
-} from '@/components/ui/dialog.tsx';
 import toast from 'react-hot-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 import { useZipLocation } from '@/providers/LocationProvider.tsx';
@@ -20,6 +11,7 @@ import sendReq, { sendFileReq } from '@/utils/sendReq.ts';
 import { useNavigate } from 'react-router-dom';
 import ListingForm from '@/components/ListingForm.tsx';
 import useTitle from '@/hooks/useTitle.ts';
+import ImagePicker from '@/components/ImagePicker.tsx';
 
 export type ListFormData = {
     title: string;
@@ -44,8 +36,6 @@ export default function List() {
     });
     const [files, setFiles] = useState<File[]>([]);
     const [images, setImages] = useState<string[]>([]);
-    const [dialogOpen, setDialogOpen] = useState(false);
-    const [newFile, setNewFile] = useState<File | null>(null);
     const [formError, setFormError] = useState<string | null>(null);
     const [submitError, setSubmitError] = useState<string>('');
     const [loading, setLoading] = useState(false);
@@ -124,32 +114,9 @@ export default function List() {
         });
     };
 
-    const onNewFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const selectedFile = e.target.files?.[0] || null;
-        if (!selectedFile) return;
-        if (selectedFile.size > 5 * 1000 * 1000) {
-            toast.error('Image must be less than 5 MB.');
-            e.target.value = '';
-            return;
-        }
-        setNewFile(selectedFile);
-    };
-
-    const onNewFileSubmit = () => {
-        if (newFile === null) {
-            toast.error('No file selected.');
-            return;
-        }
-
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            // add new image data uri to images
-            setImages(images => [...images, reader.result as string]);
-            setFiles(files => [...files, newFile]);
-            setNewFile(null);
-            setDialogOpen(false);
-        };
-        reader.readAsDataURL(newFile);
+    const onNewFile = (file: File, dataUri: string) => {
+        setImages(images => [...images, dataUri]);
+        setFiles(files => [...files, file]);
     };
 
     const deleteImage = (id: number) => {
@@ -186,39 +153,12 @@ export default function List() {
                         ))}
                         {images.length < 10 && <div className="rounded-xl border">
                             <AspectRatio ratio={1}>
-                                <Dialog open={dialogOpen} onOpenChange={open => setDialogOpen(open)}>
-                                    <DialogTrigger asChild>
-                                        <Button variant="ghost" size="full">
-                                            <Plus className="pr-1"/>
-                                            <span>Upload Image</span>
-                                        </Button>
-                                    </DialogTrigger>
-                                    <DialogContent className="sm:max-w-[425px]">
-                                        <DialogHeader>
-                                            <DialogTitle>Upload new image</DialogTitle>
-                                            <DialogDescription>
-                                                Max 5 MB, png and jpg only.
-                                            </DialogDescription>
-                                        </DialogHeader>
-                                        <div className="grid gap-4 py-4">
-                                            <div className="grid grid-cols-4 items-center gap-4">
-                                                <Label htmlFor="image" className="text-right">
-                                                    Image
-                                                </Label>
-                                                <Input
-                                                    id="image"
-                                                    type="file"
-                                                    accept="image/*"
-                                                    className="col-span-3"
-                                                    onChange={onNewFileChange}
-                                                />
-                                            </div>
-                                        </div>
-                                        <DialogFooter>
-                                            <Button onClick={onNewFileSubmit}>Save</Button>
-                                        </DialogFooter>
-                                    </DialogContent>
-                                </Dialog>
+                                <ImagePicker onNewFile={onNewFile}>
+                                    <Button variant="ghost" size="full">
+                                        <Plus className="pr-1"/>
+                                        <span>Upload Image</span>
+                                    </Button>
+                                </ImagePicker>
                             </AspectRatio>
                         </div>}
                     </div>

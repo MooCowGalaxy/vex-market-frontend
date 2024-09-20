@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import sendReq from '@/utils/sendReq.ts';
+import sendReq, { sendFileReq } from '@/utils/sendReq.ts';
 import useRequireAuth from '@/hooks/useRequireAuth.ts';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import Loading from '@/components/Loading.tsx';
@@ -15,6 +15,7 @@ import moment from 'moment';
 import { useSocket } from '@/providers/SocketProvider.tsx';
 import { ScrollArea } from '@/components/ui/scroll-area.tsx';
 import useTitle from '@/hooks/useTitle.ts';
+import ImagePicker from '@/components/ImagePicker.tsx';
 
 export default function Chat() {
     const { userId, updateNotifications } = useRequireAuth();
@@ -152,7 +153,20 @@ export default function Chat() {
         });
     };
 
-    const onImageDialogOpen = () => {};
+    const onFileUpload = async (file: File) => {
+        setLoading(true);
+
+        await toast.promise(
+            sendFileReq(`/messages/${chatId}/image`, file),
+            {
+                loading: `Uploading image...`,
+                success: 'Uploaded image!',
+                error: `Failed to upload image.`
+            }
+        );
+
+        setLoading(false);
+    };
 
     if (error.length > 0) {
         return (
@@ -244,11 +258,13 @@ export default function Chat() {
                 </ScrollArea>
                 <div className="w-full p-4 border-t">
                     <div className="flex flex-row gap-2">
-                        <Button size="sm" variant="outline" disabled={loading} onClick={onImageDialogOpen}>
-                            {!loading
-                                ? <ImagePlus/>
-                                : <MoonLoader size={16} color='white'/>}
-                        </Button>
+                        <ImagePicker onNewFile={onFileUpload}>
+                            <Button size="sm" variant="outline" disabled={loading}>
+                                {!loading
+                                    ? <ImagePlus/>
+                                    : <MoonLoader size={16} color='white'/>}
+                            </Button>
+                        </ImagePicker>
                         <Input
                             className="flex-1"
                             type="text"
