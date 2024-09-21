@@ -18,7 +18,7 @@ export default function Message({ data, last }: { data: MessageData, last: boole
                             <Tooltip>
                                 <TooltipTrigger>
                                     <div
-                                        className={`${isSelf ? 'bg-primary ml-auto' : 'bg-secondary border mr-auto'} max-w-full rounded-lg rounded-br-sm shadow-sm ${data.image ? 'p-2' : 'px-4 py-1'} select-text`}>
+                                        className={`${isSelf ? 'bg-primary ml-auto rounded-br-sm' : 'bg-secondary border mr-auto rounded-bl-sm'} max-w-full rounded-lg shadow-sm ${data.image ? 'p-2' : 'px-4 py-1'} select-text`}>
                                         {!data.image && <p className={`text-base ${isSelf ? 'text-primary-foreground' : 'text-secondary-foreground'} text-left`}>{data.message}</p>}
                                         {data.image && <img className="object-cover rounded-sm" src={data.image} alt="Attached image"/>}
                                     </div>
