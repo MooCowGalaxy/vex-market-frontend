@@ -1,9 +1,7 @@
 import useRequireAuth from '@/hooks/useRequireAuth.ts';
 import { useEffect, useState } from 'react';
 import { Label } from '@/components/ui/label.tsx';
-import { AspectRatio } from '@/components/ui/aspect-ratio.tsx';
 import { Button, buttonVariants } from '@/components/ui/button.tsx';
-import { Plus, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip.tsx';
 import { useZipLocation } from '@/providers/LocationProvider.tsx';
@@ -11,7 +9,8 @@ import sendReq, { sendFileReq } from '@/utils/sendReq.ts';
 import { useNavigate } from 'react-router-dom';
 import ListingForm from '@/components/ListingForm.tsx';
 import useTitle from '@/hooks/useTitle.ts';
-import ImagePicker from '@/components/ImagePicker.tsx';
+import NewImage from '@/components/images/NewImage.tsx';
+import Image from '@/components/images/Image.tsx';
 
 export type ListFormData = {
     title: string;
@@ -139,28 +138,9 @@ export default function List() {
                     <div
                         className="gap-2 grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3">
                         {images.map((image, index) => (
-                            <div className="relative rounded-xl border" key={index}>
-                                <AspectRatio ratio={1}>
-                                    <img src={image} alt="Image"
-                                         className="rounded-md object-cover max-w-full max-h-full w-full h-full"/>
-                                </AspectRatio>
-                                <div className="absolute top-0 right-0 m-2">
-                                    <Button variant="ghost" size="icon-sm" onClick={() => deleteImage(index)}>
-                                        <X/>
-                                    </Button>
-                                </div>
-                            </div>
+                            <Image key={index} index={index} source={image} onDelete={(id: number) => deleteImage(id)} />
                         ))}
-                        {images.length < 10 && <div className="rounded-xl border">
-                            <AspectRatio ratio={1}>
-                                <ImagePicker onNewFile={onNewFile}>
-                                    <Button variant="ghost" size="full">
-                                        <Plus className="pr-1"/>
-                                        <span>Upload Image</span>
-                                    </Button>
-                                </ImagePicker>
-                            </AspectRatio>
-                        </div>}
+                        {images.length < 10 && <NewImage onNewFile={onNewFile} />}
                     </div>
                 </div>
                 {formError !== null && formError.length > 0
