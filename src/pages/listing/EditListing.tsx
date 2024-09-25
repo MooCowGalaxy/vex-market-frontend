@@ -184,10 +184,10 @@ export default function EditListing() {
                     <p className="text-sm">Edit Images</p>
                     <div className="gap-2 grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3">
                         {currentImages.map((image, index) => (
-                            <Image key={index} index={index} source={image} addDisabled={imageCount >= 10} deleted={currentDeleted.includes(index)} onDelete={onCurrentImageDelete} onAdd={onCurrentImageAdd}/>
+                            <Image key={index} index={index} source={image} disabled={loading} addDisabled={imageCount >= 10} deleted={currentDeleted.includes(index)} onDelete={onCurrentImageDelete} onAdd={onCurrentImageAdd}/>
                         ))}
                         {newImageUris.map((image, index) => (
-                            <Image key={index} index={index} source={image} onDelete={(id: number) => deleteNewImage(id)} />
+                            <Image key={index} index={index} source={image} disabled={loading} onDelete={(id: number) => deleteNewImage(id)} />
                         ))}
                         {imageCount < 10 && <NewImage onNewFile={onNewFile} />}
                     </div>
