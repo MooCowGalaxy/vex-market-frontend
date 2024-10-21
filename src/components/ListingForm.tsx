@@ -55,7 +55,8 @@ export default function ListingForm({
                     required
                     value={form.description}
                     onChange={onFormInput}
-                    onKeyDown={onKeyDown}/>
+                    onKeyDown={onKeyDown}
+                    rows={10}/>
                 <p className="text-xs text-neutral-500">{form.description.length}/8000 characters</p>
             </div>
             <div className="mb-4 grid grid-cols-1 xs:grid-cols-2 gap-x-8 gap-y-2">
