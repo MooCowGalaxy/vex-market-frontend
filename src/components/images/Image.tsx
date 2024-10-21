@@ -4,7 +4,7 @@ import { X } from 'lucide-react';
 
 export default function Image({ index, source, deleted = false, disabled = false, addDisabled = false, onDelete, onAdd }: { index: number; source: string; deleted?: boolean; disabled?: boolean; addDisabled?: boolean; onDelete: (id: number) => void, onAdd?: (id: number) => void }) {
     return (
-        <div className="relative rounded-xl border" key={index}>
+        <div className={`${deleted ? 'hidden' : ''} relative rounded-xl border`} key={index}>
             <AspectRatio ratio={1} className="overflow-hidden rounded-md">
                 <img src={source} alt="Image"
                      className={`${deleted ? 'blur-[2px] grayscale' : ''} rounded-md object-cover max-w-full max-h-full w-full h-full`}/>
