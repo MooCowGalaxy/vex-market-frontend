@@ -258,7 +258,7 @@ export default function Chat() {
                 </ScrollArea>
                 <div className="w-full p-4 border-t">
                     <div className="flex flex-row gap-2">
-                        <ImagePicker onNewFile={onFileUpload}>
+                        <ImagePicker onNewFile={onFileUpload} autoSubmit={false}>
                             <Button size="sm" variant="outline" disabled={loading}>
                                 {!loading
                                     ? <ImagePlus/>

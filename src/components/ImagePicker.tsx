@@ -13,7 +13,7 @@ import { Label } from '@/components/ui/label.tsx';
 import { Input } from '@/components/ui/input.tsx';
 import toast from 'react-hot-toast';
 
-export default function ImagePicker({ children, onNewFile }: { children: ReactNode, onNewFile: (file: File, dataUri: string) => void }) {
+export default function ImagePicker({ children, onNewFile, autoSubmit = true }: { children: ReactNode, onNewFile: (file: File, dataUri: string) => void, autoSubmit?: boolean }) {
     const [dialogOpen, setDialogOpen] = useState(false);
     const [newFile, setNewFile] = useState<File | null>(null);
 
@@ -26,6 +26,7 @@ export default function ImagePicker({ children, onNewFile }: { children: ReactNo
             return;
         }
         setNewFile(selectedFile);
+        if (autoSubmit) onNewFileSubmit();
     };
 
     const onNewFileSubmit = () => {
